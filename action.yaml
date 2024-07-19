@@ -1,0 +1,6 @@
+name: Evrone ERP Release Notes
+description: This action help you to generate release notes for Evrone ERP services
+
+runs:
+  using: docker
+  image: 'Dockerfile'
