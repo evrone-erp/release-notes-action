@@ -8,3 +8,4 @@ flake8-quotes==3.3.2
 pylint==3.0.3
 mypy==1.8.0
 safety==3.2.4
+types-requests==2.32.0.20240712

@@ -22,7 +22,7 @@ class YandexTracker:  # pylint: disable=too-few-public-methods
 
         self.iam_token = response.get("iamToken")
 
-    def get_issue_summery(self, issue):
+    def get_issue_summary(self, issue):
         url = f"https://api.tracker.yandex.net/v2/issues/{issue}"
         resp = requests.get(
             url=url,
@@ -34,6 +34,9 @@ class YandexTracker:  # pylint: disable=too-few-public-methods
             timeout=_REQUEST_TIMEOUT,
         )
         if resp.status_code != 200:
-            return  # TODO: check missing tasks
+            print(
+                f"Get Issue Summary BadRequest: status_code: {resp.status_code}; text: {resp.text}"
+            )
+            return None
         resp_json = resp.json()
         return resp_json["summary"]
