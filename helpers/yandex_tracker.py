@@ -1,6 +1,8 @@
 import requests
 from environs import Env
 
+from config.logger_config import logger
+
 env = Env()
 
 YANDEX_ORG_ID = env("INPUT_YANDEX_ORG_ID")
@@ -22,7 +24,7 @@ class YandexTracker:  # pylint: disable=too-few-public-methods
 
         self.iam_token = response.get("iamToken")
 
-    def get_issue_summery(self, issue):
+    def get_issue_summary(self, issue):
         url = f"https://api.tracker.yandex.net/v2/issues/{issue}"
         resp = requests.get(
             url=url,
@@ -34,6 +36,11 @@ class YandexTracker:  # pylint: disable=too-few-public-methods
             timeout=_REQUEST_TIMEOUT,
         )
         if resp.status_code != 200:
-            return  # TODO: check missing tasks
+            logger.info(
+                "Get Issue Summary BadRequest: status_code: %s; text: %s",
+                resp.status_code,
+                resp.text,
+            )
+            return None
         resp_json = resp.json()
         return resp_json["summary"]
