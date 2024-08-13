@@ -17,28 +17,47 @@ GITHUB_REPOSITORY = env("GITHUB_REPOSITORY")
 TASK_KEY_PATTERN = re.compile(r"[^[]*\[([^]]*)\]")
 
 
+def create_task_dict(pull, task_key=None):
+    return {
+        "number": pull.number,
+        "message": pull.title if task_key is None else None,
+        "author": pull.user.login,
+        "task_key": task_key,
+    }
+
+
 def process_commits(commits, pr_number):
-    all_pulls = []
-    tasks = {}
+    tasks = []
     for commit in commits:
+        if "Merge pull request" in commit.commit.message:
+            continue
         pulls = commit.get_pulls()
         for pull in pulls:
-            if pull.number != pr_number:
-                all_pulls.append(pull)
-                all_matches = TASK_KEY_PATTERN.findall(pull.title)
+            if pull.number == pr_number or pull.mergeable:
+                continue
+            all_matches = TASK_KEY_PATTERN.findall(pull.title)
+            if all_matches:
                 for task_key in set(all_matches):
-                    tasks[task_key] = pull
-    return all_pulls, tasks
+                    tasks.append(create_task_dict(pull, task_key))
+            else:
+                tasks.append(create_task_dict(pull))
+    return tasks
 
 
 def build_task_lines(tasks, yandex_tracker):
     result = []
-    for task_key, pr in tasks.items():
-        title = yandex_tracker.get_issue_summary(task_key)
-        if not title:
-            logger.info("[%s] (No task found)", task_key)
-            continue
-        task_line = formatted_line(task_key, title, pr.user.login, pr.number)
+    for task in tasks:
+        task_key = task.get("task_key")
+        author = task.get("author")
+        number = task.get("number")
+        if task_key:
+            title = yandex_tracker.get_issue_summary(task_key)
+            if not title:
+                logger.info("[%s] (No task found)", task_key)
+                continue
+            task_line = formatted_line(task_key, title, author, number)
+        else:
+            task_line = formatted_line(task_key, task.get("message"), author, number)
         result.append(task_line)
     return result
 
@@ -54,13 +73,9 @@ def main():
     commits = pull_request.get_commits()
 
     # Collect commits and task numbers
-    all_pulls, tasks = process_commits(commits, pr_number)
+    tasks = process_commits(commits, pr_number)
     result = build_task_lines(tasks, yandex_tracker)
     change_pull_request_body(pull_request, result)
-
-    for pull in all_pulls:
-        logger.info(pull.merge_commit_sha)
-        logger.info(pull.title)
 
 
 if __name__ == "__main__":
