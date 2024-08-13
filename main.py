@@ -4,6 +4,7 @@ import re
 from environs import Env
 from github import Github  # type: ignore  # pylint: disable=no-name-in-module
 
+from config.logger_config import logger
 from helpers.github import change_pull_request_body, formatted_line
 from helpers.yandex_tracker import YandexTracker
 
@@ -23,6 +24,9 @@ def process_commits(commits, pr_number):
         pulls = commit.get_pulls()
         is_pr_commit = False
         sub_commits = []
+        if "Merge pull request" in commit.commit.message:
+            continue
+        logger.info(f"{commit.commit.message} by {commit.author.login}")
         for pull in pulls:
             if pull.number != pr_number and pull.number not in added_pulls:
                 all_matches = TASK_KEY_PATTERN.findall(pull.title)
@@ -38,8 +42,6 @@ def process_commits(commits, pr_number):
                 added_pulls.append(pull.number)
                 is_pr_commit = True
             else:
-                if "Merge pull request" in commit.commit.message:
-                    continue
                 sub_commits.append(
                     {
                         "number": pull.number,
