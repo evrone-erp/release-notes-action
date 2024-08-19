@@ -35,12 +35,17 @@ def process_commits(commits, pr_number):
         for pull in pulls:
             if pull.number == pr_number or pull.mergeable:
                 continue
-            all_matches = TASK_KEY_PATTERN.findall(pull.title)
-            if all_matches:
-                for task_key in set(all_matches):
-                    tasks.append(create_task_dict(pull, task_key))
-            else:
-                tasks.append(create_task_dict(pull))
+            all_matches = {
+                key
+                for keys in TASK_KEY_PATTERN.findall(pull.title)
+                for key in keys.replace(" ", "").split(",")
+            }
+            current_tasks = [
+                create_task_dict(pull, task_key) for task_key in all_matches
+            ]
+            if not current_tasks:
+                create_task_dict(pull)
+            tasks.extend(current_tasks)
     return tasks
 
 
