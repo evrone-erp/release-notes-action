@@ -6,7 +6,16 @@ from environs import Env
 from github import Github  # type: ignore  # pylint: disable=no-name-in-module
 
 from config.logger_config import logger
-from helpers.github import change_pull_request_body, formatted_line
+
+# isort: off
+from helpers.github import (
+    change_pull_request_body,
+    check_is_release,
+    formatted_line,
+    update_or_create_draft_release,
+)
+
+# isort: on
 from helpers.yandex_tracker import YandexTracker
 
 env = Env()
@@ -107,7 +116,15 @@ def main():
     # Collect commits and task numbers
     tasks = process_commits(commits, pr_number)
     result = build_task_lines(tasks, yandex_tracker)
-    change_pull_request_body(pull_request, result)
+    pr_description = "\r\n".join(result)
+    change_pull_request_body(pull_request, pr_description)
+
+    # Create draft release if release or hotfix release
+    status, release_type = check_is_release(pull_request)
+    if not status:
+        return
+    release = update_or_create_draft_release(repo, release_type, pr_description)
+    logger.info("Created new draft release %s", release.title)
 
 
 if __name__ == "__main__":
