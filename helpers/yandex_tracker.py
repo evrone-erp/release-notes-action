@@ -20,9 +20,16 @@ class YandexTracker:  # pylint: disable=too-few-public-methods
             url="https://iam.api.cloud.yandex.net/iam/v1/tokens",
             json={"yandexPassportOauthToken": YANDEX_OAUTH2_TOKEN},
             timeout=300.0,
-        ).json()
-
-        self.iam_token = response.get("iamToken")
+        )
+        if response.status_code != 200:
+            logger.error(
+                "YandexTracker Get IAM token exception: %s: %s",
+                response.status_code,
+                response.text,
+            )
+            response.raise_for_status()
+        response_data = response.json()
+        self.iam_token = response_data.get("iamToken")
 
     def get_issue_summary(self, issue):
         url = f"https://api.tracker.yandex.net/v2/issues/{issue}"
