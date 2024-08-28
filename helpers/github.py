@@ -2,14 +2,21 @@ from github.GithubException import UnknownObjectException
 
 from config.logger_config import logger
 
-MARKDOWN_LINK = "{}{} by @{} in {}"
+MARKDOWN_LINK = "{task_key}{title}{author} in {task_numbers}"
 
 
 def formatted_line(task_key, title, user_login, pr_numbers):
     task_key = (
         f"[[{task_key}](https://tracker.yandex.ru/{task_key})] " if task_key else ""
     )
-    return MARKDOWN_LINK.format(task_key, title, user_login, pr_numbers)
+    user_login = f" by @{user_login}" if user_login else ""
+
+    return MARKDOWN_LINK.format(
+        task_key=task_key,
+        title=title,
+        author=user_login,
+        task_numbers=pr_numbers,
+    )
 
 
 def change_pull_request_body(pull_request, body):
