@@ -150,6 +150,7 @@ def process_epic_tasks(repo, commits, pull):
 
 def collect_tasks(commits, pr_number, repo):
     tasks: List[Dict] = []
+    unique_epic_tasks: set = set()
 
     for commit in commits:
         commit_message = commit.commit.message
@@ -163,15 +164,26 @@ def collect_tasks(commits, pr_number, repo):
             epic_tasks = []
             head_branch = pull.head.ref.split("/")
             if head_branch[0] == "epic" and len(head_branch) > 1:
+                exist_pt = any(
+                    task["is_epic"] and pull.number in task["number"] for task in tasks
+                )
+                if exist_pt:
+                    continue
                 logger.info("Epic found %s #%s", pull.title, pull.number)
                 is_epic = True
                 epic_tasks = process_epic_tasks(repo, pull.get_commits(), pull)
+                task_keys = {
+                    epic_task["task_key"]
+                    for epic_task in epic_tasks
+                    if epic_task["task_key"]
+                }
+                unique_epic_tasks = unique_epic_tasks.union(task_keys)
             process_pull(pull, commit_message, tasks, is_epic, epic_tasks)
 
     sorted_tasks = sorted(
         tasks, key=lambda x: (x["task_key"] is None, x["task_key"], x["is_epic"])
     )
-    return sorted_tasks
+    return sorted_tasks, unique_epic_tasks
 
 
 def build_task_lines(tasks, yandex_tracker):
@@ -236,8 +248,13 @@ def initialize():
 
 def build_description_parts(commits, pr_number, repo, yandex_tracker):
     description_parts = ["# What's Changed \r\n"]
-    tasks = collect_tasks(commits, pr_number, repo)
-    simple_tasks = [task for task in tasks if not task["is_epic"]]
+    tasks, unique_epic_tasks = collect_tasks(commits, pr_number, repo)
+    simple_tasks = [
+        task
+        for task in tasks
+        if not task["is_epic"]
+        and (task["task_key"] is None or task["task_key"] not in unique_epic_tasks)
+    ]
     tasks_descriptions = build_task_lines(simple_tasks, yandex_tracker)
     description_parts.extend(f"* {row}" for row in tasks_descriptions)
     description_parts.extend(
