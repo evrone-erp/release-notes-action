@@ -51,7 +51,7 @@ class ReleaseMixin:
         :return: Объект GitRelease.
         """
         last_version = self._get_latest_release_version()
-        new_version = self._get_new_release_version(last_version, release_type)
+        new_version = self.get_new_release_version(last_version, release_type)
         if current_release := self._check_draft_release_exist(new_version):
             self._update_release(current_release, pr_description)
             return
@@ -91,7 +91,7 @@ class ReleaseMixin:
 
         return current_version_releases[0]
 
-    def _get_new_release_version(self, last_version: str, release_type: str) -> str:
+    def get_new_release_version(self, last_version: str, release_type: str) -> str:
         """
         Генерирует новую версию релиза на основе последней версии и типа релиза.
 

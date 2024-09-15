@@ -42,7 +42,7 @@ class GithubService(EpicTaskMixin, ReleaseMixin):
         :return: Список строк, представляющих описание изменений.
         """
         description_parts = ["# What's Changed \r\n"]
-        tasks, unique_epic_tasks = self._collect_tasks()
+        tasks, unique_epic_tasks = self.collect_tasks()
 
         # Список задач, которые не являются эпиками и не привязаны к эпическим задачам
         simple_tasks = [
@@ -91,14 +91,13 @@ class GithubService(EpicTaskMixin, ReleaseMixin):
             result.append(task_line)
         return result
 
-    def _collect_tasks(self) -> Tuple[List[Dict], Set[str]]:
+    def collect_tasks(self) -> Tuple[List[Dict], Set[str]]:
         """
         Собирает задачи из коммитов, связанных с Pull Request.
 
         :return: Кортеж из списка задач и уникальных ключей эпических задач.
         """
         unique_epic_tasks: Set[str] = set()
-
         for commit in self.main_commits:
             commit_message = commit.commit.message
             if "Merge pull request" in commit_message:

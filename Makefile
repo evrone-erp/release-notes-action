@@ -11,3 +11,7 @@ lint:
 
 safety:
 	safety check --policy-file .safety-policy.yml
+
+
+test:
+	python -m unittest tests/test_*
