@@ -10,12 +10,12 @@ from github import PullRequest
 
 from config.constants import TASK_KEY_PATTERN
 from config.logger_config import logger
-from mixins.github import EpicTaskMixin, ReleaseMixin
+from mixins.github import EpicTaskMixin, HotfixMixin, ReleaseMixin
 
 from .yandex_tracker import YandexTracker
 
 
-class GithubService(EpicTaskMixin, ReleaseMixin):
+class GithubService(EpicTaskMixin, ReleaseMixin, HotfixMixin):
 
     def __init__(
         self,
@@ -42,7 +42,12 @@ class GithubService(EpicTaskMixin, ReleaseMixin):
         :return: Список строк, представляющих описание изменений.
         """
         description_parts = ["# What's Changed \r\n"]
-        tasks, unique_epic_tasks = self.collect_tasks()
+        branch_name_type = self.main_pull_request.head.ref.split("/")[0]
+        if branch_name_type.lower() == "hotfix":
+            tasks = self.collect_hotfix_tasks()
+            unique_epic_tasks: set = set()
+        else:
+            tasks, unique_epic_tasks = self.collect_tasks()
 
         # Список задач, которые не являются эпиками и не привязаны к эпическим задачам
         simple_tasks = [
