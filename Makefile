@@ -11,3 +11,8 @@ lint:
 
 safety:
 	safety check --policy-file .safety-policy.yml
+
+
+test:
+	coverage run -m unittest tests/test_*
+	coverage report --fail-under=90

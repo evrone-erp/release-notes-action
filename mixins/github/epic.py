@@ -61,7 +61,11 @@ class EpicTaskMixin:
                         link=link,
                     )
                 )
-        return epic_tasks
+        sorted_tasks = sorted(
+            epic_tasks,
+            key=lambda x: (x["task_key"] is None, x["task_key"]),
+        )
+        return sorted_tasks
 
     def collect_epic_tasks(self, epic_tasks: List[Dict], task_index: int):
         """

@@ -1,24 +1,20 @@
 import requests
-from environs import Env
 
 from config.logger_config import logger
 
-env = Env()
-
-YANDEX_ORG_ID = env("INPUT_YANDEX_ORG_ID")
-YANDEX_OAUTH2_TOKEN = env("INPUT_YANDEX_OAUTH2_TOKEN")
 _REQUEST_TIMEOUT = 300.0
 
 
 class YandexTracker:  # pylint: disable=too-few-public-methods
 
-    def __init__(self):
+    def __init__(self, org_id, token):
+        self.org_id = org_id
         response = requests.post(
             headers={
                 "Content-Type": "application/json",
             },
             url="https://iam.api.cloud.yandex.net/iam/v1/tokens",
-            json={"yandexPassportOauthToken": YANDEX_OAUTH2_TOKEN},
+            json={"yandexPassportOauthToken": token},
             timeout=300.0,
         )
         if response.status_code != 200:
@@ -37,7 +33,7 @@ class YandexTracker:  # pylint: disable=too-few-public-methods
             url=url,
             headers={
                 "Authorization": f"Bearer {self.iam_token}",
-                "X-Org-ID": YANDEX_ORG_ID,
+                "X-Org-ID": self.org_id,
                 "Content-Type": "application/json",
             },
             timeout=_REQUEST_TIMEOUT,
