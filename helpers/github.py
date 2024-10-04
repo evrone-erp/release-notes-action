@@ -8,7 +8,7 @@ from github import PullRequest
 
 # isort: on
 
-from config.constants import TASK_KEY_PATTERN
+from config.constants import MAIN_TITLE_NAME, TASK_KEY_PATTERN
 from config.logger_config import logger
 from mixins.github import EpicTaskMixin, HotfixMixin, ReleaseMixin
 
@@ -41,7 +41,7 @@ class GithubService(EpicTaskMixin, HotfixMixin, ReleaseMixin):
 
         :return: Список строк, представляющих описание изменений.
         """
-        description_parts = ["# What's Changed \r\n"]
+        description_parts = [MAIN_TITLE_NAME]
         branch_name_type = self.main_pull_request.head.ref.split("/")[0]
         if branch_name_type.lower() == "hotfix":
             tasks = self.collect_hotfix_tasks()

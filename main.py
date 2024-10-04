@@ -18,7 +18,7 @@ def main():
         GITHUB_EVENT_PATH, GITHUB_TOKEN, GITHUB_REPOSITORY, yandex_tracker
     )
     description_parts = github_service.build_description_parts()
-    pr_description = "\r\n".join(description_parts)
+    pr_description = "\n".join(description_parts)
     github_service.change_pull_request_body(pr_description)
     github_service.create_draft_release(pr_description)
 

@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, patch
 
+from config.constants import EPIC_TITLE_NAME, MAIN_TITLE_NAME
+
 from .base_test import BaseTestCase
 
 
@@ -78,11 +80,16 @@ class TestGithubServiceBuildDescriptionParts(BaseTestCase):
 
         # Вызываем тестируемый метод
         description_parts = github_service.build_description_parts()
+        epic_description = (
+            f"\n {EPIC_TITLE_NAME}: [[ERP-5](https://tracker.yandex.ru/ERP-5)] ERP-5 in [#4](https://link.com)\n"
+            "* [[ERP-2](https://tracker.yandex.ru/ERP-2)] ERP-2 by @user in [#5](https://link.com)\n"
+            "* [[ERP-3](https://tracker.yandex.ru/ERP-3)] ERP-3 by @user in [#5](https://link.com)"
+        )
         # Проверяем результат
         expected_description = [
-            "# What's Changed \r\n",
+            MAIN_TITLE_NAME,
             "* Support: something by @user in [#1](https://link.com)",
             "* [[ERP-1](https://tracker.yandex.ru/ERP-1)] ERP-1 by @user in [#2](https://link.com), [#3](https://link.com)",
-            "\r\n # Epic: [[ERP-5](https://tracker.yandex.ru/ERP-5)] ERP-5 in [#4](https://link.com)\r\n* [[ERP-2](https://tracker.yandex.ru/ERP-2)] ERP-2 by @user in [#5](https://link.com)\r\n* [[ERP-3](https://tracker.yandex.ru/ERP-3)] ERP-3 by @user in [#5](https://link.com)",  # noqa  # pylint: disable=C0301
+            epic_description,
         ]
         self.assertEqual(description_parts, expected_description)

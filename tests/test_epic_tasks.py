@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, patch
 
+from config.constants import EPIC_TITLE_NAME, MAIN_TITLE_NAME
+
 from .base_test import BaseTestCase
 from .utils import LINK_EXAMPLE, get_tasks_with_epic
 
@@ -43,8 +45,12 @@ class TestGithubServiceEpicTasks(BaseTestCase):
         description_parts = github_service.build_description_parts()
 
         expected_parts = [
-            "# What's Changed \r\n",
+            MAIN_TITLE_NAME,
             "* [[ERP-4](https://tracker.yandex.ru/ERP-4)] ERP-4 by @user in [#4](https://link.com)",
-            "\r\n # Epic: 1\r\n* [[ERP-5](https://tracker.yandex.ru/ERP-5)] ERP-5 by @user in [#5](https://link.com)\r\n* [[ERP-6](https://tracker.yandex.ru/ERP-6)] ERP-6 by @user in [#5](https://link.com)",  # noqa  # pylint: disable=C0301
+            (
+                f"\n {EPIC_TITLE_NAME}: 1\n* "
+                "[[ERP-5](https://tracker.yandex.ru/ERP-5)] ERP-5 by @user in [#5](https://link.com)\n* "
+                "[[ERP-6](https://tracker.yandex.ru/ERP-6)] ERP-6 by @user in [#5](https://link.com)"
+            ),
         ]
         self.assertEqual(description_parts, expected_parts)

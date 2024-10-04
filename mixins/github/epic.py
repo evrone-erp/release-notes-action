@@ -2,7 +2,15 @@ from typing import Any, Dict, List, Optional
 
 from github import PullRequest
 
-from config.constants import MERGE_PULL_REQUEST_PATTERN, TASK_KEY_PATTERN
+# conflict with black linter
+# isort: off
+from config.constants import (
+    EPIC_TITLE_NAME,
+    MERGE_PULL_REQUEST_PATTERN,
+    TASK_KEY_PATTERN,
+)
+
+# isort: on
 
 
 class EpicTaskMixin:
@@ -97,14 +105,14 @@ class EpicTaskMixin:
         epic_task_lines = self.build_task_lines([epic_task])  # type: ignore[attr-defined]
 
         if epic_task_lines:
-            description_parts.append(f"\r\n # Epic: {epic_task_lines[0]}")
+            description_parts.append(f"\n {EPIC_TITLE_NAME}: {epic_task_lines[0]}")
         else:
             task_key = epic_task["task_key"]
-            description_parts.append(f"\r\n # Epic: {task_key}")
+            description_parts.append(f"\n {EPIC_TITLE_NAME}: {task_key}")
 
         epic_result = self.build_task_lines(epic_task["tasks"])  # type: ignore[attr-defined]
         description_parts.extend(f"* {row}" for row in epic_result)
-        return "\r\n".join(description_parts)
+        return "\n".join(description_parts)
 
     @staticmethod
     def create_epic_task(
