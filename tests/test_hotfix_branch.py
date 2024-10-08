@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, patch
 
+from config.constants import MAIN_TITLE_NAME
+
 from .base_test import BaseTestCase
 from .utils import LINK_EXAMPLE
 
@@ -27,7 +29,7 @@ class TestGithubServiceHotfixBranchPrepare(BaseTestCase):
             github_service.main_commits.append(commit)
         description_parts = github_service.build_description_parts()
         expected_description_parts = [
-            "# What's Changed \r\n",
+            MAIN_TITLE_NAME,
             "* [[ERP-23](https://tracker.yandex.ru/ERP-23)] ERP-23 by @user in [#1](https://link.com)",
             "* Fix anything by @user in [#1](https://link.com)",
         ]
