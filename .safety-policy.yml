@@ -1,9 +1,0 @@
-# Safety Security and License Configuration file
-security:
-  ignore-cvss-severity-below: 0
-  ignore-cvss-unknown-severity: False
-  ignore-vulnerabilities:
-    70612:
-      # CVE-2019-8341: https://data.safetycli.com/v/70612/97c
-      # ADVISORY: In Jinja2, the from_string function is prone to Server Side Template Injection (SSTI) where it takes the "source" parameter as...
-  continue-on-vulnerability-error: False
