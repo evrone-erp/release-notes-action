@@ -4,9 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update \
-    && pip install --upgrade --no-cache-dir pip \
-    && pip install --upgrade --no-cache-dir wheel \
-    && pip install --upgrade --no-cache-dir setuptools
+    && pip install --upgrade --no-cache-dir pip wheel setuptools
 
 COPY . .
 
