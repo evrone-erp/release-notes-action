@@ -7,6 +7,6 @@ flake8-bandit==4.1.1
 flake8-quotes==3.4.0
 pylint==3.3.6
 mypy==1.15.0
-types-requests==2.32.0.20250328
+types-requests==2.32.0.20250515
 coverage==7.8.0
 pip-audit==2.9.0
