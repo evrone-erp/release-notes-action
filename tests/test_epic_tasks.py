@@ -39,7 +39,11 @@ class TestGithubServiceEpicTasks(BaseTestCase):
             github_service.main_commits.append(mock_commit)
 
         mock_repo.get_pull = MagicMock(
-            return_value=MagicMock(html_url=LINK_EXAMPLE, number=5)
+            return_value=MagicMock(
+                html_url=LINK_EXAMPLE,
+                number=5,
+                user=MagicMock(login="user_from_nested_pr"),
+            )
         )
 
         description_parts = github_service.build_description_parts()
@@ -49,8 +53,8 @@ class TestGithubServiceEpicTasks(BaseTestCase):
             "* [[ERP-4](https://tracker.yandex.ru/ERP-4)] ERP-4 by @user in [#4](https://link.com)",
             (
                 f"\n {EPIC_TITLE_NAME}: 1\n* "
-                "[[ERP-5](https://tracker.yandex.ru/ERP-5)] ERP-5 by @user in [#5](https://link.com)\n* "
-                "[[ERP-6](https://tracker.yandex.ru/ERP-6)] ERP-6 by @user in [#5](https://link.com)"
+                "[[ERP-5](https://tracker.yandex.ru/ERP-5)] ERP-5 by @user_from_nested_pr in [#5](https://link.com)\n* "
+                "[[ERP-6](https://tracker.yandex.ru/ERP-6)] ERP-6 by @user_from_nested_pr in [#5](https://link.com)"
             ),
         ]
         self.assertEqual(description_parts, expected_parts)

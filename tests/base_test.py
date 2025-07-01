@@ -37,6 +37,8 @@ class BaseTestCase(unittest.TestCase):
         # Создаем мок репозитория и Pull Request
         mock_repo = MagicMock()
         mock_pull_request = MagicMock()
+        mock_pull_request_user = MagicMock(login="user")
+        mock_pull_request.author = mock_pull_request_user
 
         # Настраиваем возвращаемые значения для методов
         mock_repo.get_pull.return_value = mock_pull_request
