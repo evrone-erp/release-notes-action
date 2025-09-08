@@ -8,5 +8,5 @@ flake8-quotes==3.4.0
 pylint==3.3.6
 mypy==1.15.0
 types-requests==2.32.0.20250328
-coverage==7.8.0
+coverage==7.10.6
 pip-audit==2.9.0
