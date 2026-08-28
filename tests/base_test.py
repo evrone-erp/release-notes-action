@@ -8,20 +8,9 @@ from helpers.yandex_tracker import YandexTracker
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
-        # Патчим requests.post внутри метода setUp
-        self.patcher = patch("requests.post")
-        mock_post = self.patcher.start()
-
-        # Создаем фиктивный ответ, который будет возвращен вместо реального вызова requests.post
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"iamToken": "fake_iam_token"}
-        mock_post.return_value = mock_response
-
         ya_org_id = "fake_org_id"
         ya_token = "fake_token"  # noqa
 
-        # Создаем экземпляр YandexTracker, который будет использовать замоканный requests.post
         self.mocked_tracker = YandexTracker(ya_org_id, ya_token)
         # Используем patch.object для замены метода get_issue_summary
         patch.object(
