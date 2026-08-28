@@ -36,27 +36,30 @@ class EpicTaskMixin:
             pull_number = pull.number
             link = pull.html_url
             author = pull.user.login
-            message = commit.commit.message
+            commit_message = commit.commit.message
 
             # Проверка на наличие ссылки на другой pull request в сообщении коммита
-            match = MERGE_PULL_REQUEST_PATTERN.search(message)
+            match = MERGE_PULL_REQUEST_PATTERN.search(commit_message)
             if match:
                 pull_number = int(match.group(1))
                 pull_request = self.repo.get_pull(number=pull_number)  # type: ignore[attr-defined]
                 link = pull_request.html_url
-
-            # Определение автора pull request, связанного с коммитом
-            cur_pulls = commit.get_pulls()
-            for cur_pull in cur_pulls:
-                if cur_pull.number == pull.number:
-                    author = cur_pull.user.login
-                    break
+                author = pull_request.user.login
+            else:
+                # Определение автора pull request, связанного с коммитом
+                cur_pulls = commit.get_pulls()
+                for cur_pull in cur_pulls:
+                    if cur_pull.number == pull.number:
+                        author = cur_pull.user.login
+                        break
 
             # Извлечение ключей задач из сообщения коммита
-            all_matches = self.extract_task_keys(message, TASK_KEY_PATTERN)  # type: ignore[attr-defined]
+            all_matches = self.extract_task_keys(commit_message, TASK_KEY_PATTERN)  # type: ignore[attr-defined]
             if all_matches:
                 epic_tasks.extend(
-                    self.create_epic_task(pull_number, task_key, message, author, link)
+                    self.create_epic_task(
+                        pull_number, task_key, commit_message, author, link
+                    )
                     for task_key in all_matches
                 )
             else:
@@ -64,7 +67,7 @@ class EpicTaskMixin:
                     self.create_epic_task(
                         pull_number=pull_number,
                         task_key=None,
-                        message=message,
+                        message=commit_message,
                         author=author,
                         link=link,
                     )
