@@ -1,12 +1,12 @@
 -r requirements.txt
 
-black==26.3.1
-isort==6.0.1
-flake8==7.2.0
+black==26.5.1
+isort==9.0.1
+flake8==7.3.0
 flake8-bandit==4.1.1
 flake8-quotes==3.4.0
-pylint==3.3.6
-mypy==1.15.0
-types-requests==2.32.0.20250328
-coverage==7.8.0
-pip-audit==2.9.0
+pylint==4.0.8
+mypy==2.3.1
+types-requests==2.33.0.20260712
+coverage==7.16.0
+pip-audit==2.10.1
